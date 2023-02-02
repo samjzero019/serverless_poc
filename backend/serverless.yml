@@ -1,0 +1,147 @@
+org: usamajameel
+app: serverless-poc
+service: serverless-poc
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: us-east-2
+  
+# custom:
+  
+
+functions:
+  getCategories:
+    handler: functions/getCategories.handler
+    package:
+      individually: true
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/getCategories.js
+    events:
+      - http:
+          path: /api/categories
+          method: get
+          cors: true
+          # private: true
+          # authorizer: 
+          #   name: cognito-authorizer-named
+          #   type: COGNITO_USER_POOLS
+          #   arn:
+          #     Fn::GetAtt:
+          #       - CognitoUserPool
+          #       - Arn
+
+      
+  getProducts:
+    handler: functions/getProducts.handler
+    package:
+      individually: true
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/getProducts.js
+    events:
+      - http:
+          path: /api/getProducts
+          method: get
+          cors: true          
+          # private: true
+          #  authorizer: 
+          #   name: cognito-authorizer-named
+          #   type: COGNITO_USER_POOLS
+          #   arn:
+          #     Fn::GetAtt:
+          #       - CognitoUserPool
+          #       - Arn
+
+  getCategoryProducts:
+    handler: functions/getCategoryProducts.handler
+    package:
+      individually: true
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/getCategoryProducts.js
+    events:
+      - http:
+          path: /api/getProducts/{category}
+          method: get
+          cors: true
+          # private: true
+          #  authorizer: 
+          #   name: cognito-authorizer-named
+          #   type: COGNITO_USER_POOLS
+          #   arn:
+          #     Fn::GetAtt:
+          #       - CognitoUserPool
+          #       - Arn
+
+  getProductDetail:
+    handler: functions/getProductDetail.handler
+    package:
+      individually: true
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/getProductDetail.js
+    events:
+      - http:
+          path: /api/getProductDetails/{productID}
+          method: get
+          cors: true
+          # private: true
+          #  authorizer: 
+          #   name: cognito-authorizer-named
+          #   type: COGNITO_USER_POOLS
+          #   arn:
+          #     Fn::GetAtt:
+          #       - CognitoUserPool
+          #       - Arn
+          
+
+# resources:
+#   Resources:
+
+      # OrderCognitoPool:
+      #   Type: AWS::Cognito::UserPool
+      #   Properties:
+      #     UserPoolName: orders-pool
+      #     Policies:
+      #       PasswordPolicy:
+      #         MinimumLength: 8
+      #     UsernameAttributes:
+      #       - email
+      #     Schema:
+      #       - AttributeDataType: String
+      #         Name: email
+      #         Required: true
+
+      # OrderCognitoPoolClient:
+      #   Type: AWS::Cognito::UserPoolClient
+      #   Properties:
+      #     UserPoolId: !Ref OrderCognitoPool
+      #     ClientName: order-pool-client
+      #     ExplicitAuthFlows:
+      #       - ALLOW_ADMIN_USER_PASSWORD_AUTH
+      #       - ALLOW_REFRESH_TOKEN_AUTH
+      #     GenerateSecret: true
+      #     SupportedIdentityProviders:
+      #       - COGNITO
+
+     
+
+# outputs:
+  # CognitoClientID: !Ref OrderCognitoPoolClient
+  # CognitoUserPoolID: !Ref OrderCognitoPool
+  
