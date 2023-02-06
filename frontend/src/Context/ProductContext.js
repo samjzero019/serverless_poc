@@ -10,7 +10,7 @@ export const ProductProvider = ({ children }) => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const API_GATEWAY_ID = 'vesprvbkxb'
+  const API_GATEWAY_ID = 'ktjp6ihj79'
 
   const GET_CATEGORIES_API_ENDPOINT =
     `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/categories`;

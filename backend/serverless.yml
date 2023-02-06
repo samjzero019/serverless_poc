@@ -7,11 +7,61 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: us-east-2
+  # permissions for lambda to call other resources
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - cognito-idp:AdminInitiateAuth
+        - cognito-idp:AdminCreateUser
+        - cognito-idp:AdminSetUserPassword
+      Resource: "*"
   
 # custom:
   
 
 functions:
+  ### ======= AUTH START
+
+  loginUser:
+    handler: functions/user/login.handler
+    environment: 
+      user_pool_id : !Ref ServerlessCognitoUserPool
+      client_id: !Ref ServerlessCognitoPoolUserClient
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/login.js
+        - functions/user/include.js
+    events:
+      - http:
+          path: /api/users/login
+          method: post
+          cors: true
+
+
+  signupUser:
+    handler: functions/user/signup.handler
+    environment: 
+      user_pool_id : !Ref ServerlessCognitoUserPool
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/signup.js
+        - functions/user/include.js
+    events:
+      - http:
+          path: /api/users/signup
+          method: post
+          cors: true
+
+  ### ====== AUTH END 
+
   getCategories:
     handler: functions/getCategories.handler
     package:
@@ -27,14 +77,6 @@ functions:
           path: /api/categories
           method: get
           cors: true
-          # private: true
-          # authorizer: 
-          #   name: cognito-authorizer-named
-          #   type: COGNITO_USER_POOLS
-          #   arn:
-          #     Fn::GetAtt:
-          #       - CognitoUserPool
-          #       - Arn
 
       
   getProducts:
@@ -52,14 +94,7 @@ functions:
           path: /api/getProducts
           method: get
           cors: true          
-          # private: true
-          #  authorizer: 
-          #   name: cognito-authorizer-named
-          #   type: COGNITO_USER_POOLS
-          #   arn:
-          #     Fn::GetAtt:
-          #       - CognitoUserPool
-          #       - Arn
+          
 
   getCategoryProducts:
     handler: functions/getCategoryProducts.handler
@@ -76,14 +111,7 @@ functions:
           path: /api/getProducts/{category}
           method: get
           cors: true
-          # private: true
-          #  authorizer: 
-          #   name: cognito-authorizer-named
-          #   type: COGNITO_USER_POOLS
-          #   arn:
-          #     Fn::GetAtt:
-          #       - CognitoUserPool
-          #       - Arn
+         
 
   getProductDetail:
     handler: functions/getProductDetail.handler
@@ -100,48 +128,68 @@ functions:
           path: /api/getProductDetails/{productID}
           method: get
           cors: true
-          # private: true
-          #  authorizer: 
-          #   name: cognito-authorizer-named
-          #   type: COGNITO_USER_POOLS
-          #   arn:
-          #     Fn::GetAtt:
-          #       - CognitoUserPool
-          #       - Arn
-          
 
-# resources:
-#   Resources:
+  # func for order 
+  PlaceOrder:
+    handler: functions/user/placeOrder.handler
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/placeOrder.js
+        - functions/user/include.js
+    events:
+      - http:
+          path: /api/placeOrder
+          method: get
+          cors: true
+          private: true
+          authorizer: 
+            name: cognito-authorizer-named
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - ServerlessCognitoUserPool
+                - Arn
+            claims:
+              - email
 
-      # OrderCognitoPool:
-      #   Type: AWS::Cognito::UserPool
-      #   Properties:
-      #     UserPoolName: orders-pool
-      #     Policies:
-      #       PasswordPolicy:
-      #         MinimumLength: 8
-      #     UsernameAttributes:
-      #       - email
-      #     Schema:
-      #       - AttributeDataType: String
-      #         Name: email
-      #         Required: true
+resources:
+  Resources:
+      ServerlessCognitoUserPool:
+        Type: AWS::Cognito::UserPool
+        Properties:
+          UserPoolName: serverless-auth-user-pool
+          Policies:
+            PasswordPolicy:
+              MinimumLength: 8
+          UsernameAttributes:
+            - email
+          Schema:
+            - AttributeDataType: String
+              Name: email
+              Required: true
+          AutoVerifiedAttributes: ["email"] # for now lets verify email auto.. no need to verify email by token
 
-      # OrderCognitoPoolClient:
-      #   Type: AWS::Cognito::UserPoolClient
-      #   Properties:
-      #     UserPoolId: !Ref OrderCognitoPool
-      #     ClientName: order-pool-client
-      #     ExplicitAuthFlows:
-      #       - ALLOW_ADMIN_USER_PASSWORD_AUTH
-      #       - ALLOW_REFRESH_TOKEN_AUTH
-      #     GenerateSecret: true
-      #     SupportedIdentityProviders:
-      #       - COGNITO
+      ServerlessCognitoPoolUserClient:
+        Type: AWS::Cognito::UserPoolClient
+        Properties:
+          UserPoolId: !Ref ServerlessCognitoUserPool
+          ClientName: serverless-auth--user-pool-client-ui
+          ExplicitAuthFlows:
+            - ALLOW_ADMIN_USER_PASSWORD_AUTH
+            - ALLOW_REFRESH_TOKEN_AUTH
+            # - ADMIN_NO_SRP_AUTH  # verify user by username and password
+          GenerateSecret: false
+          SupportedIdentityProviders:
+            - COGNITO
 
      
 
-# outputs:
-  # CognitoClientID: !Ref OrderCognitoPoolClient
-  # CognitoUserPoolID: !Ref OrderCognitoPool
+outputs:
+  CognitoClientID: !Ref ServerlessCognitoPoolUserClient
+  CognitoUserPoolID: !Ref ServerlessCognitoUserPool
+  
   
