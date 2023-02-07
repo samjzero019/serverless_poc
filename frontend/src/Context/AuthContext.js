@@ -1,7 +1,8 @@
-import { createContext, useState, useEffect, useContext } from "react"
-import { useNavigate } from "react-router-dom"
+import axios from "axios";
+import { createContext, useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 const defaultUser = JSON.parse(localStorage.getItem("user")) || {
   firstName: "",
@@ -10,29 +11,44 @@ const defaultUser = JSON.parse(localStorage.getItem("user")) || {
   password: "",
   passwordConfirm: "",
   address: "",
-}
-const defaultUsers = JSON.parse(localStorage.getItem("users")) || []
+};
+const defaultUsers = JSON.parse(localStorage.getItem("users")) || [];
 
 const AuthProvider = ({ children }) => {
-  const [users, setUsers] = useState(defaultUsers)
-  const [currentUser, setCurrentUser] = useState(defaultUser)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [errors, setErrors] = useState({})
+  const [users, setUsers] = useState(defaultUsers);
+  const [currentUser, setCurrentUser] = useState(defaultUser);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const login = (email, password) => {
-    const userData = Object.values(users)
-    const indexOfUser = users.map((item) => item.email).indexOf(email)
-    if (indexOfUser && userData[indexOfUser].password === password) {
-      const finalUser = userData[indexOfUser]
-      setCurrentUser(finalUser)
-      setLoggedIn(true)
-      localStorage.setItem("user", JSON.stringify(finalUser))
-    }
-  }
+    const LoggedUser = {email: email, password: password}
+    // const userData = Object.values(users)
+    // const indexOfUser = users.map((item) => item.email).indexOf(email)
+    // if (indexOfUser && userData[indexOfUser].password === password) {
+    //   const finalUser = userData[indexOfUser]
+    //   setCurrentUser(finalUser)
+    //   setLoggedIn(true)
+    //   localStorage.setItem("user", JSON.stringify(finalUser))
+    // }
+    axios
+      .post(
+        `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/users/login`,
+        { email: email, password: password }
+      )
+      .then((res) => {
+        console.log("Response in Login: ", res.data);
+
+        setCurrentUser(LoggedUser);
+        setLoggedIn(true);
+        localStorage.setItem("user", JSON.stringify(LoggedUser));
+        localStorage.setItem("token", JSON.stringify(res.data.token));
+      })
+      .catch((err) => console.log("Error in Login", err.message));
+  };
 
   const logout = () => {
-    localStorage.removeItem("user")
+    localStorage.removeItem("user");
     setCurrentUser({
       firstName: "",
       lastName: "",
@@ -40,24 +56,26 @@ const AuthProvider = ({ children }) => {
       password: "",
       passwordConfirm: "",
       address: "",
-    })
-    setLoggedIn(false)
-  }
+    });
+    setLoggedIn(false);
+  };
 
   useEffect(() => {
-    const isEmpty = Object.values(currentUser).every(value => value ? true : false)
-    if(Object.keys(errors).length > 0) {
-      setLoggedIn(false)
+    const isEmpty = Object.values(currentUser).every((value) =>
+      value ? true : false
+    );
+    if (Object.keys(errors).length > 0) {
+      setLoggedIn(false);
     } else if (!isEmpty) {
-      setLoggedIn(false)
+      setLoggedIn(false);
     } else {
-      const userData = [...users, currentUser]
-      setUsers(userData)
-      localStorage.setItem("users", JSON.stringify(userData))
-      localStorage.setItem("user", JSON.stringify(currentUser))
-      setLoggedIn(true)
+      const userData = [...users, currentUser];
+      setUsers(userData);
+      localStorage.setItem("users", JSON.stringify(userData));
+      localStorage.setItem("user", JSON.stringify(currentUser));
+      setLoggedIn(true);
     }
-  }, [errors])
+  }, [errors]);
 
   const value = {
     currentUser,
@@ -70,11 +88,11 @@ const AuthProvider = ({ children }) => {
     setIsSubmitting,
     logout,
     login,
-  }
+  };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-}
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};
 
-const useAuth = () => useContext(AuthContext)
+const useAuth = () => useContext(AuthContext);
 
-export { AuthProvider, useAuth }
+export { AuthProvider, useAuth };

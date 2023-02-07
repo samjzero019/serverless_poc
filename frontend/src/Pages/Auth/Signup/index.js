@@ -1,9 +1,10 @@
-import { IdentificationIcon } from '@heroicons/react/outline'
-import { useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../../../Context/AuthContext'
-import styles from './styles.module.css'
-import validations from './validations'
+import { IdentificationIcon } from "@heroicons/react/outline";
+import axios from "axios";
+import { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../../Context/AuthContext";
+import styles from "./styles.module.css";
+import validations from "./validations";
 
 const Signup = () => {
   const {
@@ -13,26 +14,37 @@ const Signup = () => {
     loggedIn,
     errors,
     setErrors,
-    setIsSubmitting
-  } = useAuth()
+    setIsSubmitting,
+  } = useAuth();
 
-  const navigate = useNavigate()
-  
+  const navigate = useNavigate();
+
   useEffect(() => {
-    loggedIn && navigate('/')
-  }, [loggedIn])
+    loggedIn && navigate("/");
+  }, [loggedIn]);
 
   const handleSignUpFormChange = (e) => {
-    setCurrentUser({ ...currentUser, [e.target.name]: e.target.value })
-  }
+    setCurrentUser({ ...currentUser, [e.target.name]: e.target.value });
+  };
 
   const handleSignUpSubmit = (e) => {
-    e.preventDefault()
-    setErrors(validations(currentUser, users)) 
-    setIsSubmitting(true)
-    localStorage.setItem('user', JSON.stringify(currentUser))
-    localStorage.setItem('users', JSON.stringify(users))
-  }
+    e.preventDefault();
+    setErrors(validations(currentUser, users));
+    setIsSubmitting(true);
+    axios
+      .post(
+        `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/users/signup`,
+        currentUser
+      )
+      .then((res) => {
+        console.log("Response in SingUp: ", res.data);
+        localStorage.setItem("user", JSON.stringify(currentUser));
+        localStorage.setItem("users", JSON.stringify(users));
+
+        navigate("/");
+      })
+      .catch((err) => console.log("Error in SingUp: ", err.message));
+  };
 
   return (
     <div className={styles.formGroupContainer}>
@@ -47,7 +59,9 @@ const Signup = () => {
         >
           <div className={styles.inputGroup}>
             <div>
-            {errors.firstName && <span className={styles.error}>{errors.firstName}</span>}
+              {errors.firstName && (
+                <span className={styles.error}>{errors.firstName}</span>
+              )}
               <label className="sr-only">First Name</label>
               <input
                 type="text"
@@ -57,11 +71,12 @@ const Signup = () => {
                 name="firstName"
                 placeholder="First Name"
               />
-              
             </div>
 
             <div>
-            {errors.lastName && <span className={styles.error}>{errors.lastName}</span>}
+              {errors.lastName && (
+                <span className={styles.error}>{errors.lastName}</span>
+              )}
               <label className="sr-only">Last Name</label>
               <input
                 type="text"
@@ -71,10 +86,11 @@ const Signup = () => {
                 name="lastName"
                 placeholder="Last Name"
               />
-              
             </div>
             <div>
-            {errors.email && <span className={styles.error}>{errors.email}</span>}
+              {errors.email && (
+                <span className={styles.error}>{errors.email}</span>
+              )}
               <label className="sr-only">Email</label>
               <input
                 type="email"
@@ -84,10 +100,11 @@ const Signup = () => {
                 name="email"
                 placeholder="Email Address"
               />
-              
             </div>
             <div>
-            {errors.password && <span className={styles.error}>{errors.password}</span>}
+              {errors.password && (
+                <span className={styles.error}>{errors.password}</span>
+              )}
               <label className="sr-only">Password</label>
               <input
                 type="Password"
@@ -97,10 +114,11 @@ const Signup = () => {
                 name="password"
                 placeholder="Password"
               />
-              
             </div>
             <div>
-            {errors.passwordConfirm && <span className={styles.error}>{errors.passwordConfirm}</span>}
+              {errors.passwordConfirm && (
+                <span className={styles.error}>{errors.passwordConfirm}</span>
+              )}
               <label className="sr-only">Password Confirm</label>
               <input
                 type="Password"
@@ -110,7 +128,6 @@ const Signup = () => {
                 name="passwordConfirm"
                 placeholder="Password Confirm"
               />
-              
             </div>
             <div className={styles.linkBox}>
               <div className={styles.linkDiv}>
@@ -136,7 +153,7 @@ const Signup = () => {
         </form>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Signup
+export default Signup;

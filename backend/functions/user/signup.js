@@ -43,7 +43,7 @@ module.exports.handler = async (event) => {
             };
             await cognito.adminSetUserPassword(paramsForSetPass).promise()
         }
-        return sendResponse(200, { message: 'User registration successful' })
+        return sendResponse(200, {  message: 'User registration successful' })
     }
     catch (error) {
         const message = error.message ? error.message : 'Internal server error in SignUp'

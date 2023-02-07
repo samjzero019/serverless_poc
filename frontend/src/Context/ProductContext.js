@@ -10,16 +10,16 @@ export const ProductProvider = ({ children }) => {
   const [product, setProduct] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const API_GATEWAY_ID = 'ktjp6ihj79'
+  const API_GATEWAY_ID = process.env.REACT_APP_API_GATEWAY_ID
 
   const GET_CATEGORIES_API_ENDPOINT =
-    `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/categories`;
+    `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/categories`
   const GET_PRODUCT_DATA_API_ENDPOINT =
-    `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProductData`;
+    `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProducts`;
   const GET_CATEGORY_PRODUCTS_API_ENDPOINT = 
-  `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProductData/${category}`;
+  `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProducts/${category}`;
   const GET_PRODUCT_DETAILS_API_ENDPOINT =
-    `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProductDetail/${productID}`;
+    `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProductDetails/${productID}`;
 
   useEffect(() => {
     setLoading(true);
@@ -36,7 +36,7 @@ export const ProductProvider = ({ children }) => {
 
   useEffect(() => {
     setLoading(true);
-    if (category && category.length > 0) {
+    if (category && category.length > 0 && category !== undefined) {
       axios
         .get(GET_CATEGORY_PRODUCTS_API_ENDPOINT)
         .then((res) => {

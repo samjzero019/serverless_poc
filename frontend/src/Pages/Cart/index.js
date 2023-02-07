@@ -1,19 +1,21 @@
-import React from 'react'
+import React from "react";
 import { ShoppingCartIcon, TrashIcon } from "@heroicons/react/outline";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../../Context/CartContext";
 import styles from "./styles.module.css";
+import { Button } from "@material-ui/core";
 
 const Cart = () => {
   const { items, removeFromCart } = useCart();
 
-  const subtotal = items.reduce((acc, obj) => acc + obj.price, 0).toFixed(1)
+  const navigate = useNavigate();
+  const subtotal = items.reduce((acc, obj) => acc + obj.price, 0).toFixed(1);
 
   return (
     <div>
       {items.length < 1 && (
         <div className="flex flex-wrap max-w-7xl mx-auto my-4">
-        <div className="w-full sm:w-2/2 md:w-2/2 xl:w-5/5 p-4 h-[500px] my-auto">
+          <div className="w-full sm:w-2/2 md:w-2/2 xl:w-5/5 p-4 h-[500px] my-auto">
             <div className={styles.cardBg}>
               <ShoppingCartIcon className="h-40 w-40 mx-auto mt-10" />
               <p className="text-xl font-extralight tracking-widest text-center pt-6">
@@ -66,7 +68,11 @@ const Cart = () => {
                         </p>
                       </div>
                       <div className="flex flex-row ml-auto">
-                        <button className="w-5 h-5 ml-auto m-4 hover:text-red-500" onClick={() => removeFromCart(item.id)}>
+                        <hr />
+                        <button
+                          className="w-5 h-5 ml-auto m-4 hover:text-red-500"
+                          onClick={() => removeFromCart(item.id)}
+                        >
                           <TrashIcon />
                         </button>
                       </div>
@@ -83,18 +89,37 @@ const Cart = () => {
                   Order Summary
                 </span>
                 <span className="text-sm my-2 font-extralight flex">
-                  Subtotal <span className="ml-auto font-normal">$ {subtotal}</span>
+                  Subtotal{" "}
+                  <span className="ml-auto font-normal">$ {subtotal}</span>
                 </span>
                 <span className="text-sm my-2 font-extralight flex">
-                  Shipping Estimate <span className="ml-auto font-normal">$ 5</span>
+                  Shipping Estimate{" "}
+                  <span className="ml-auto font-normal">$ 5</span>
                 </span>
                 <span className="text-sm my-2 font-extralight flex">
                   Tax Estimate <span className="ml-auto font-normal">$ 5</span>
                 </span>
                 <span className="text-md my-2 font-normal flex">
-                  Order Total <span className="ml-auto">$ {parseFloat(subtotal) + 10}</span>
+                  Order Total{" "}
+                  <span className="ml-auto">$ {parseFloat(subtotal) + 10}</span>
                 </span>
               </div>
+            </div>
+            <div style={{ paddingTop: "1rem" }}>
+              <hr />
+              <Button
+                style={{ width: "100%" }}
+                variant="contained"
+                onClick={() => {
+                  navigate("/payment", {
+                    state: {
+                      items,
+                    },
+                  });
+                }}
+              >
+                Proceed to Payment
+              </Button>
             </div>
           </div>
         </div>

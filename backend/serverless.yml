@@ -7,6 +7,7 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: us-east-2
+  timeout: 30 # since lambdas are attached to gateway thus it is limited to max 30s 
   # permissions for lambda to call other resources
   iamRoleStatements:
     - Effect: Allow
@@ -16,7 +17,7 @@ provider:
         - cognito-idp:AdminSetUserPassword
       Resource: "*"
   
-# custom:
+
   
 
 functions:
@@ -145,7 +146,7 @@ functions:
           path: /api/placeOrder
           method: get
           cors: true
-          private: true
+          # private: true
           authorizer: 
             name: cognito-authorizer-named
             type: COGNITO_USER_POOLS
@@ -179,12 +180,14 @@ resources:
           UserPoolId: !Ref ServerlessCognitoUserPool
           ClientName: serverless-auth--user-pool-client-ui
           ExplicitAuthFlows:
-            - ALLOW_ADMIN_USER_PASSWORD_AUTH
-            - ALLOW_REFRESH_TOKEN_AUTH
-            # - ADMIN_NO_SRP_AUTH  # verify user by username and password
-          GenerateSecret: false
-          SupportedIdentityProviders:
-            - COGNITO
+            # - ALLOW_ADMIN_USER_PASSWORD_AUTH
+            # - ALLOW_REFRESH_TOKEN_AUTH
+            - "ADMIN_NO_SRP_AUTH"  # verify user by username and password
+          # GenerateSecret: false
+          AccessTokenValidity: 5
+          IdTokenValidity: 5
+          # SupportedIdentityProviders:
+          #   - COGNITO
 
      
 
