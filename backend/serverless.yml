@@ -144,7 +144,7 @@ functions:
     events:
       - http:
           path: /api/placeOrder
-          method: get
+          method: post
           cors: true
           # private: true
           authorizer: 
@@ -157,6 +157,31 @@ functions:
             claims:
               - email
 
+  # getOrders:
+  #   handler: functions/user/getOrders.handler
+  #   package:
+  #     patterns:
+  #       - '!functions/**'
+  #       - '!package.json'
+  #       - '!package-lock.json'
+  #       - '!README.md'
+  #       - functions/user/getOrders.js
+  #       - functions/user/include.js
+  #   events:
+  #     - http:
+  #         path: /api/placeOrder
+  #         method: post
+  #         cors: true
+  #         # private: true
+  #         authorizer: 
+  #           name: cognito-authorizer-named
+  #           type: COGNITO_USER_POOLS
+  #           arn:
+  #             Fn::GetAtt:
+  #               - ServerlessCognitoUserPool
+  #               - Arn
+  #           claims:
+  #             - email  
 resources:
   Resources:
       ServerlessCognitoUserPool:
@@ -184,8 +209,8 @@ resources:
             # - ALLOW_REFRESH_TOKEN_AUTH
             - "ADMIN_NO_SRP_AUTH"  # verify user by username and password
           # GenerateSecret: false
-          AccessTokenValidity: 5
-          IdTokenValidity: 5
+          # AccessTokenValidity: 5
+          # IdTokenValidity: 5
           # SupportedIdentityProviders:
           #   - COGNITO
 

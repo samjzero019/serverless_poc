@@ -12,10 +12,10 @@ const defaultUser = JSON.parse(localStorage.getItem("user")) || {
   passwordConfirm: "",
   address: "",
 };
-const defaultUsers = JSON.parse(localStorage.getItem("users")) || [];
+// const defaultUsers = JSON.parse(localStorage.getItem("users")) || [];
 
 const AuthProvider = ({ children }) => {
-  const [users, setUsers] = useState(defaultUsers);
+  // const [users, setUsers] = useState(defaultUsers);
   const [currentUser, setCurrentUser] = useState(defaultUser);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
@@ -42,13 +42,14 @@ const AuthProvider = ({ children }) => {
         setCurrentUser(LoggedUser);
         setLoggedIn(true);
         localStorage.setItem("user", JSON.stringify(LoggedUser));
-        localStorage.setItem("token", JSON.stringify(res.data.token));
+        localStorage.setItem("token", res.data.token);
       })
       .catch((err) => console.log("Error in Login", err.message));
   };
 
   const logout = () => {
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
     setCurrentUser({
       firstName: "",
       lastName: "",
@@ -69,9 +70,9 @@ const AuthProvider = ({ children }) => {
     } else if (!isEmpty) {
       setLoggedIn(false);
     } else {
-      const userData = [...users, currentUser];
-      setUsers(userData);
-      localStorage.setItem("users", JSON.stringify(userData));
+      // const userData = [...users, currentUser];
+      // setUsers(userData);
+      // localStorage.setItem("users", JSON.stringify(userData));
       localStorage.setItem("user", JSON.stringify(currentUser));
       setLoggedIn(true);
     }
@@ -80,7 +81,7 @@ const AuthProvider = ({ children }) => {
   const value = {
     currentUser,
     setCurrentUser,
-    users,
+    // users,
     loggedIn,
     errors,
     loggedIn,

@@ -28,8 +28,8 @@ const useStyles = makeStyles({
 
 export default function Details() {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
 
+  const currentUser = localStorage.getItem('user')
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -43,6 +43,7 @@ export default function Details() {
         </Typography>
         <TextField
           id="filled-basic"
+          value={ currentUser ? currentUser.email : 'Please Login'  }
           label="Username"
           variant="filled"
           className={classes.text}
@@ -53,7 +54,7 @@ export default function Details() {
           label="Address"
           variant="filled"
           multiline
-          rows={4}
+          minRows={4}
           className={classes.text}
         />
       </CardContent>

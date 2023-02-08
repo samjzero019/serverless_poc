@@ -11,7 +11,6 @@ import {
   formatFormData,
 } from "./utils";
 
-import styles from "./styles.css";
 
 import "react-credit-cards/es/styles-compiled.css";
 
@@ -60,7 +59,10 @@ export default class PayCard extends React.Component {
         return acc;
       }, {});
 
+    localStorage.setItem('payment', this.state)
+    console.log('state', this.state)
     this.setState({ formData });
+    
     this.form.reset();
   };
 

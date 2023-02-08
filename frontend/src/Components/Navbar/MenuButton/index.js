@@ -111,7 +111,7 @@ const MenuButton = () => {
               />
               <div className="flex flex-col">
                 <div className="text-left">
-                  <strong>Hello,</strong>
+                  <strong>Hello <br/><span>{currentUser.email}</span></strong>
                 </div>
                 <div>{currentUser?.firstName}</div>
               </div>

@@ -36,8 +36,6 @@ const useStyles = makeStyles({
 
 export default function Success() {
   const classes = useStyles();
-  const bull = <span className={classes.bullet}>•</span>;
-
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -47,7 +45,7 @@ export default function Success() {
         <Typography
           className={classes.title}
           variant="h2"
-          color="success"
+          color="primary"
           gutterBottom
         >
           <b> Order Confirmed </b>
