@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { render } from "react-dom";
 import Card from "react-credit-cards";
 import Grid from "@material-ui/core/Grid";
@@ -11,11 +11,25 @@ import {
   formatFormData,
 } from "./utils";
 
-
 import "react-credit-cards/es/styles-compiled.css";
 
 export default class PayCard extends React.Component {
-  state = {
+  componentWillUnmount() {
+    localStorage.setItem(
+      "cardDetails",
+     {
+        number: this.state.number,
+        name: this.state.name,
+        expiry: this.state.expiry,
+        cvc: this.state.cvc,
+        issuer: this.state.issuer,
+        focused: this.state.focused,
+        formData: this.state.formData,
+      }
+    );
+  }
+
+  state = JSON.parse(localStorage.getItem("cardDetails")) || {
     number: "",
     name: "",
     expiry: "",
@@ -52,18 +66,18 @@ export default class PayCard extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
     const { issuer } = this.state;
-    const formData = [...e.target.elements]
-      .filter((d) => d.name)
-      .reduce((acc, d) => {
-        acc[d.name] = d.value;
-        return acc;
-      }, {});
+    console.log("event target: ", e.target.value);
+    // const formData = [...e.target.elements]
+    //   .filter((d) => d.name)
+    //   .reduce((acc, d) => {
+    //     acc[d.name] = d.value;
+    //     return acc;
+    //   }, {});
 
-    localStorage.setItem('payment', this.state)
-    console.log('state', this.state)
-    this.setState({ formData });
-    
-    this.form.reset();
+    // console.log('state', this.state)
+
+    // this.setState({ formData });
+    // this.form.reset();
   };
 
   render() {
@@ -104,6 +118,7 @@ export default class PayCard extends React.Component {
                     style={{ width: 300, margin: "5px" }}
                     onChange={this.handleInputChange}
                     onFocus={this.handleInputFocus}
+                    value={this.state.number}
                   />
                 </div>
                 <div className="form-group">
@@ -117,6 +132,7 @@ export default class PayCard extends React.Component {
                     style={{ width: 300, margin: "5px" }}
                     onChange={this.handleInputChange}
                     onFocus={this.handleInputFocus}
+                    value={this.state.name}
                   />
                 </div>
                 <div className="row">
@@ -132,6 +148,7 @@ export default class PayCard extends React.Component {
                       style={{ width: 300, margin: "5px" }}
                       onChange={this.handleInputChange}
                       onFocus={this.handleInputFocus}
+                      value={this.state.expiry}
                     />
                   </div>
                   <div className="col-6">
@@ -146,6 +163,7 @@ export default class PayCard extends React.Component {
                       style={{ width: 300, margin: "5px" }}
                       onChange={this.handleInputChange}
                       onFocus={this.handleInputFocus}
+                      value={this.state.cvc}
                     />
                   </div>
                 </div>
@@ -169,4 +187,4 @@ export default class PayCard extends React.Component {
   }
 }
 
-render(<PayCard />, document.getElementById("root"));
+// render(<PayCard />, document.getElementById("root"));

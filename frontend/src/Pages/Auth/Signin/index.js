@@ -20,6 +20,7 @@ const Signin = () => {
     setIsSubmitting(true)
     try {
       await login(emailRef.current.value, passwordRef.current.value)
+      
     } catch {
       alert("Error!")
     }

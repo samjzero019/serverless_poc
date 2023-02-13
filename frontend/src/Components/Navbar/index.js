@@ -11,7 +11,7 @@ import NAVIGATION from '../../Config/navbarItemList'
 
 const Navbar = () => {
   const { categories, setCategory } = useProduct()
-  const { loggedIn, currentUser, setIsSubmitting, logout } = useAuth()
+  const { loggedIn, setIsSubmitting, logout } = useAuth()
 
   const handleLogout = async () => {
     setIsSubmitting(true)

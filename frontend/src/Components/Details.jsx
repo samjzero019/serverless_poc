@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -28,8 +28,13 @@ const useStyles = makeStyles({
 
 export default function Details() {
   const classes = useStyles();
+  const [address, setAddress] = useState("Dummy address");
 
-  const currentUser = localStorage.getItem('user')
+  const {email} = JSON.parse(localStorage.getItem('user')) || "dummy@mail.com"
+  useEffect(()=>
+  {
+    return ()=> localStorage.setItem('address', address )
+  })
   return (
     <Card className={classes.root}>
       <CardContent>
@@ -43,21 +48,26 @@ export default function Details() {
         </Typography>
         <TextField
           id="filled-basic"
-          value={ currentUser ? currentUser.email : 'Please Login'  }
+          value={ email ? email   : "username/email"}
           label="Username"
           variant="filled"
           className={classes.text}
+
         />
         <br />
         <TextField
           id="filled-basic"
-          label="Address"
+          name="Address"
+          value={address}
           variant="filled"
           multiline
           minRows={4}
           className={classes.text}
+          onChange={(e)=> setAddress(e.target.value)}
         />
       </CardContent>
     </Card>
   );
 }
+
+

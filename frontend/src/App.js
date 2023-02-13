@@ -11,6 +11,7 @@ import ProductDetail from './Pages/ProductDetail'
 import Cart from './Pages/Cart'
 import Favorites from './Pages/Favorites'
 import PaymentForm from "./Components/Form";
+import Orders from './Pages/Orders'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/payment" element={<PaymentForm />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="*" element={<Error404 />} />
         </Routes>
       </Container>

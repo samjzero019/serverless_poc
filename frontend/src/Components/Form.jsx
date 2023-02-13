@@ -11,10 +11,10 @@ import Toolbar from "@material-ui/core/Toolbar";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Details from "./Details";
-import PaymentMode from "./PaymentMode";
+// import PaymentMode from "./PaymentMode";
 import Success from "./Success";
 import PayCard from "./PayCard";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 import { useAuth } from "../Context/AuthContext";
 import axios from "axios";
@@ -44,19 +44,18 @@ const useStyles = makeStyles((theme) => ({
 
 function getSteps() {
   // return ["Enter Details", "Payment Mode", "Payment", "Order Confirmed"];
-  return [ "Payment", "Order Confirmed"];
+  return ["Enter Details", "Payment", "Order Confirmed"];
 }
 
 function getStepContent(step) {
   switch (step) {
-    // case 0:
-    //   return <Details />;
+    case 0:
+      return <Details />;
     // case 1:
     //   return <PaymentMode />;
-
-    case 0:
-      return <PayCard />;
     case 1:
+      return <PayCard finalData />;
+    case 2:
       return <Success />;
     default:
       return " YOu Something missed";
@@ -73,7 +72,6 @@ export default function Form() {
   const { loggedIn } = useAuth();
 
   const navigate = useNavigate();
-
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -114,41 +112,48 @@ export default function Form() {
   };
 
   const placeOrder = () => {
-    const token = localStorage.getItem("token");
-    const { email } = localStorage.getItem("user");
+    console.log("LoggedIn: ", loggedIn);
+    if (loggedIn) {
+      const cardDetails = JSON.parse(localStorage.getItem("cardDetails"));
+      const address = localStorage.getItem("address");
+      const  {email}  = JSON.parse(localStorage.getItem("user")) ;
 
-    const header = {
-      headers: {
-        Authorization: localStorage.getItem("token")
-      },
-    };
+      const header = {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      };
 
-    const payload = {
-      username: email,
-      orderItems: items,
-      payment: {},
-      orderDate: Date.now(),
-    };
+      const payload = {
+        username: email,
+        orderItems: items,
+        address: address,
+        payment: cardDetails,
+        orderDate: Date.now(),
+      };
 
-    axios
-      .post(
-        `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/placeOrder`,
-        payload,
-        header
-      )
-      .then((res) => {
-        console.log("Log in Placeorder Function", res.data);
-        if (loggedIn) {
-          emptyCart();
-          navigate("/");
-        } else {
-          alert("Please Login First to place order!");
-          navigate("/signin");
-        }
-      })
-      .catch((err) => console.log("Error during placing Order: ", err.message));
+      axios
+        .post(
+          `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/placeOrder`,
+          payload,
+          header
+        )
+        .then((res) => {
+          console.log("Log in Place order Function", res.data);
+          if (loggedIn) {
+            emptyCart();
+            navigate("/");
+          } else {
+            alert("Please Login First to place order!");
+          }
+        })
+        .catch((err) =>
+          console.log("Error during placing Order: ", err.message)
+        );
+    } else {
+      navigate("/signin");
+    }
   };
-
 
   const handleReset = () => {
     setActiveStep(0);

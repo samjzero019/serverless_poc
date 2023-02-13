@@ -8,6 +8,7 @@ provider:
   runtime: nodejs14.x
   region: us-east-2
   timeout: 30 # since lambdas are attached to gateway thus it is limited to max 30s 
+
   # permissions for lambda to call other resources
   iamRoleStatements:
     - Effect: Allow
@@ -16,7 +17,7 @@ provider:
         - cognito-idp:AdminCreateUser
         - cognito-idp:AdminSetUserPassword
       Resource: "*"
-  
+    
 
   
 
@@ -133,6 +134,8 @@ functions:
   # func for order 
   PlaceOrder:
     handler: functions/user/placeOrder.handler
+    environment:
+      TABLE_NAME: "OrderTable"
     package:
       patterns:
         - '!functions/**'
@@ -146,7 +149,6 @@ functions:
           path: /api/placeOrder
           method: post
           cors: true
-          # private: true
           authorizer: 
             name: cognito-authorizer-named
             type: COGNITO_USER_POOLS
@@ -214,10 +216,28 @@ resources:
           # SupportedIdentityProviders:
           #   - COGNITO
 
-     
+      OrderDynamoDB:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: OrderTable
+          AttributeDefinitions:
+            - AttributeName: OrderID
+              AttributeType: S
+            - AttributeName: Username
+              AttributeType: S
+
+
+          KeySchema:
+            - AttributeName: OrderID
+              KeyType: HASH
+            - AttributeName: Username
+              KeyType: RANGE
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
 outputs:
   CognitoClientID: !Ref ServerlessCognitoPoolUserClient
   CognitoUserPoolID: !Ref ServerlessCognitoUserPool
-  
+  OrderDynamoDBTableName: !Ref  OrderDynamoDB
   
