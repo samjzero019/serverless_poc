@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../../Context/AuthContext'
 import styles from './styles.module.css'
 import { LoginIcon } from '@heroicons/react/outline'
-
+import axios from "axios";
 
 const Signin = () => {
 
@@ -18,12 +18,23 @@ const Signin = () => {
   const handleSignIn = async (e) => {
     e.preventDefault()
     setIsSubmitting(true)
-    try {
-      await login(emailRef.current.value, passwordRef.current.value)
-      
-    } catch {
-      alert("Error!")
-    }
+    axios
+      .post(
+        `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/users/login`,
+        { email: email, password: password }
+      )
+      .then((res) => {
+        console.log("Response in Login: ", res.data);
+        localStorage.setItem("token", res.data.token);
+        try {
+          login(emailRef.current.value, passwordRef.current.value)
+       } catch {
+         alert("Error!")
+       }
+      })
+      .catch((err) => console.log("Error in Login", err.message));
+
+   
     setIsSubmitting(false)
   }
 

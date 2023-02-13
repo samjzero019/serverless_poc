@@ -17,15 +17,15 @@ export default class PayCard extends React.Component {
   componentWillUnmount() {
     localStorage.setItem(
       "cardDetails",
-     {
-        number: this.state.number,
-        name: this.state.name,
-        expiry: this.state.expiry,
-        cvc: this.state.cvc,
-        issuer: this.state.issuer,
-        focused: this.state.focused,
-        formData: this.state.formData,
-      }
+    JSON.stringify( {
+      number: this.state.number,
+      name: this.state.name,
+      expiry: this.state.expiry,
+      cvc: this.state.cvc,
+      issuer: this.state.issuer,
+      focused: this.state.focused,
+      formData: this.state.formData,
+    })
     );
   }
 

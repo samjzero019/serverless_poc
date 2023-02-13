@@ -32,7 +32,7 @@ module.exports.handler = async (event) => {
     Item: item,
   };
 
-  console.log("INput parameter: ", input)
+  console.log("Input parameter: ", input)
   
   return sendResponse(200, { message: "msg" });
 };

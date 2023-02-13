@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
+
+import { useNavigate } from "react-router-dom";
+import { useCart } from "../Context/CartContext";
+import { useAuth } from "../Context/AuthContext";
+import axios from "axios";
 
 import succlogo from "../Assets/animat-checkmark.gif";
 const useStyles = makeStyles({
@@ -36,6 +41,59 @@ const useStyles = makeStyles({
 
 export default function Success() {
   const classes = useStyles();
+  const { items, emptyCart } = useCart();
+  const { loggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  
+
+  const placeOrder = () => {
+    console.log("LoggedIn: ", loggedIn);
+    if (loggedIn) {
+      const cardDetails = JSON.parse(localStorage.getItem("cardDetails"));
+      const address = localStorage.getItem("address");
+      const  {email}  = JSON.parse(localStorage.getItem("user")) ;
+
+      const header = {
+        headers: {
+          Authorization: localStorage.getItem("token"),
+        },
+      };
+
+      const payload = {
+        username: email,
+        orderItems: items,
+        address: address,
+        payment: cardDetails,
+        orderDate: Date.now(),
+      };
+
+      axios
+        .post(
+          `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/placeOrder`,
+          payload,
+          header
+        )
+        .then((res) => {
+          console.log("Log in Place order Function", res.data);
+          if (loggedIn) {
+            emptyCart();
+            navigate("/");
+          } else {
+            alert("Please Login First to place order!");
+          }
+        })
+        .catch((err) =>
+          console.log("Error during placing Order: ", err.message)
+        );
+    } else {
+      navigate("/signin");
+    }
+  }
+  useEffect(()=>
+  {
+   return ()=> placeOrder()
+  })
   return (
     <Card className={classes.root}>
       <CardContent>

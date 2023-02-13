@@ -1,4 +1,4 @@
-import axios from "axios";
+
 import { createContext, useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -31,25 +31,15 @@ const AuthProvider = ({ children }) => {
     //   setLoggedIn(true)
     //   localStorage.setItem("user", JSON.stringify(finalUser))
     // }
-    axios
-      .post(
-        `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/users/login`,
-        { email: email, password: password }
-      )
-      .then((res) => {
-        console.log("Response in Login: ", res.data);
-
-        setCurrentUser(LoggedUser);
-        setLoggedIn(true);
-        localStorage.setItem("user", JSON.stringify(LoggedUser));
-        localStorage.setItem("token", res.data.token);
-      })
-      .catch((err) => console.log("Error in Login", err.message));
+    setCurrentUser(LoggedUser);
+    setLoggedIn(true);
+    localStorage.setItem("user", JSON.stringify(LoggedUser));
   };
 
   const logout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("token");
+    // localStorage.removeItem('cardDetails')
     setCurrentUser({
       firstName: "",
       lastName: "",

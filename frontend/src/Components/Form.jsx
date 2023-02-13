@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
@@ -14,10 +14,7 @@ import Details from "./Details";
 // import PaymentMode from "./PaymentMode";
 import Success from "./Success";
 import PayCard from "./PayCard";
-import { useNavigate } from "react-router-dom";
-import { useCart } from "../Context/CartContext";
-import { useAuth } from "../Context/AuthContext";
-import axios from "axios";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -68,10 +65,11 @@ export default function Form() {
   const [skipped, setSkipped] = React.useState(new Set());
   const steps = getSteps();
 
-  const { items, emptyCart } = useCart();
-  const { loggedIn } = useAuth();
 
-  const navigate = useNavigate();
+
+
+
+
 
   const isStepOptional = (step) => {
     return step === 1;
@@ -82,6 +80,7 @@ export default function Form() {
   };
 
   const handleNext = () => {
+ 
     let newSkipped = skipped;
     if (isStepSkipped(activeStep)) {
       newSkipped = new Set(newSkipped.values());
@@ -111,52 +110,10 @@ export default function Form() {
     });
   };
 
-  const placeOrder = () => {
-    console.log("LoggedIn: ", loggedIn);
-    if (loggedIn) {
-      const cardDetails = JSON.parse(localStorage.getItem("cardDetails"));
-      const address = localStorage.getItem("address");
-      const  {email}  = JSON.parse(localStorage.getItem("user")) ;
 
-      const header = {
-        headers: {
-          Authorization: localStorage.getItem("token"),
-        },
-      };
-
-      const payload = {
-        username: email,
-        orderItems: items,
-        address: address,
-        payment: cardDetails,
-        orderDate: Date.now(),
-      };
-
-      axios
-        .post(
-          `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/placeOrder`,
-          payload,
-          header
-        )
-        .then((res) => {
-          console.log("Log in Place order Function", res.data);
-          if (loggedIn) {
-            emptyCart();
-            navigate("/");
-          } else {
-            alert("Please Login First to place order!");
-          }
-        })
-        .catch((err) =>
-          console.log("Error during placing Order: ", err.message)
-        );
-    } else {
-      navigate("/signin");
-    }
-  };
 
   const handleReset = () => {
-    setActiveStep(0);
+  
   };
 
   return (
@@ -215,19 +172,8 @@ export default function Form() {
                 <Grid item xs={12}>
                   <div className={classes.actions}>
                     {activeStep === steps.length ? (
-                      // <div>
-                      //   <Typography
-                      //     className={classes.instructions}
-                      //   ></Typography>
-                      //   <Button
-                      //     onClick={handleReset}
-                      //     className={classes.button}
-                      //   >
-                      //     Reset
-                      //   </Button>
-                      // </div>
-
-                      placeOrder()
+                      console.log("otherwise")
+                      
                     ) : (
                       <div>
                         <Typography
