@@ -17,7 +17,15 @@ provider:
         - cognito-idp:AdminCreateUser
         - cognito-idp:AdminSetUserPassword
       Resource: "*"
-    
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "*"
 
   
 
@@ -159,31 +167,32 @@ functions:
             claims:
               - email
 
-  # getOrders:
-  #   handler: functions/user/getOrders.handler
-  #   package:
-  #     patterns:
-  #       - '!functions/**'
-  #       - '!package.json'
-  #       - '!package-lock.json'
-  #       - '!README.md'
-  #       - functions/user/getOrders.js
-  #       - functions/user/include.js
-  #   events:
-  #     - http:
-  #         path: /api/placeOrder
-  #         method: post
-  #         cors: true
-  #         # private: true
-  #         authorizer: 
-  #           name: cognito-authorizer-named
-  #           type: COGNITO_USER_POOLS
-  #           arn:
-  #             Fn::GetAtt:
-  #               - ServerlessCognitoUserPool
-  #               - Arn
-  #           claims:
-  #             - email  
+  getOrders:
+    handler: functions/user/getOrders.handler
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/getOrders.js
+        - functions/user/include.js
+    events:
+      - http:
+          path: /api/getOrders/{username}
+          method: get
+          cors: true
+          # private: true
+          authorizer: 
+            name: cognito-authorizer-named
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - ServerlessCognitoUserPool
+                - Arn
+            claims:
+              - email 
+
 resources:
   Resources:
       ServerlessCognitoUserPool:

@@ -1,7 +1,5 @@
 const { sendResponse } = require("./include");
 
-// const { marshall } = require("@aws-sdk/util-dynamodb");
-
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
 const uuid = require("react-uuid");
@@ -10,29 +8,34 @@ module.exports.handler = async (event) => {
   console.log(" event: ", event);
   const { body } = event;
   const tableName = process.env.TABLE_NAME;
-  const { username, orderItems, address, cardDetails, orderDate } =
+  const { username, orderItems, address, payment, orderDate } =
     JSON.parse(body);
 
-    console.log("cardDetails: ", cardDetails)
   /** at object level this function can add as well as update the object  */
 
-  let item = {
-    OrderID: uuid(),
-    Username: username,
-    OrderItems: orderItems,
-    Address: address,
-    Card: cardDetails,
-    CreatedAt: orderDate,
-  };
-
-  console.log("itm", item);
 
   const input = {
     TableName: tableName,
-    Item: item,
+    Item: {
+      OrderID: uuid(),
+      Username: username,
+      OrderItems: orderItems,
+      Address: address,
+      Card: payment,
+      CreatedAt: orderDate,
+    },
   };
 
-  console.log("Input parameter: ", input)
-  
-  return sendResponse(200, { message: "msg" });
+  console.log("Input parameter: ", input);
+
+  try {
+    const data = await docClient.put(input).promise();
+    msg = "Successful in Placing Order";
+    console.log(data);
+  } catch (err) {
+    msg = `"Failed in Placing Order" ${err.message}`;
+    return sendResponse(200, { message: msg });
+  }
+
+  return sendResponse(200, { message: msg });
 };

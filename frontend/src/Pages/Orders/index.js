@@ -1,109 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { TrashIcon } from "@heroicons/react/outline";
-import { useCart } from "../../Context/CartContext";
+
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Context/AuthContext";
+import axios from "axios";
+
+
 const Orders = () => {
-  // const orders = localStorage.getItem('orders')
-  const items = JSON.parse(localStorage.getItem("cart"));
+  const [orders,setOrders] = useState([])
+  const { loggedIn } = useAuth();
+  const navigate = useNavigate();
 
-  console.log("items", items);
-  const orders = [
-    {
-      orderID: "asdca13asdcd",
-      user_email: "admin@netsoltech.com",
-      address: "some address",
-      orderItems: [
-        {
-          id: 3,
-          title: "Mens Cotton Jacket",
-          price: 55.99,
-          description:
-            "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
-          rating: { rate: 4.7, count: 500 },
-        },
-        {
-          id: 4,
-          title: "Mens Casual Slim Fit",
-          price: 15.99,
-          description:
-            "The color could be slightly different between on the screen and in practice. / Please note that body builds vary by person, therefore, detailed size information should be reviewed below on the product description.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
-          rating: { rate: 2.1, count: 430 },
-        },
-      ],
-      created_at: Date.now(),
-    },
-    {
-      orderID: "asdca13asdcd",
-      user_email: "admin@netsoltech.com",
-      address: "some address",
-      orderItems: [
-        {
-          id: 3,
-          title: "Mens Cotton Jacket",
-          price: 55.99,
-          description:
-            "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
-          rating: { rate: 4.7, count: 500 },
-        },
-        {
-          id: 4,
-          title: "Mens Casual Slim Fit",
-          price: 15.99,
-          description:
-            "The color could be slightly different between on the screen and in practice. / Please note that body builds vary by person, therefore, detailed size information should be reviewed below on the product description.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71YXzeOuslL._AC_UY879_.jpg",
-          rating: { rate: 2.1, count: 430 },
-        },
-      ],
 
-      created_at: Date.now(),
-    },
-    {
-      orderID: "asdca13asdcd133",
-      user_email: "admin@netsoltech.com",
-      address: "some address",
-      orderItems: [
-        {
-          id: 3,
-          title: "Mens Cotton Jacket",
-          price: 55.99,
-          description:
-            "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
-          rating: { rate: 4.7, count: 500 },
+  useEffect(()=>
+  {
+    console.log("LoggedIn: ", loggedIn);
+    if (loggedIn) {
+      const  {email}  = JSON.parse(localStorage.getItem("user")) ;
+
+      const header = {
+        headers: {
+          Authorization: localStorage.getItem("token"),
         },
-        {
-          id: 3,
-          title: "Mens Cotton Jacket",
-          price: 55.99,
-          description:
-            "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
-          rating: { rate: 4.7, count: 500 },
-        },
-        {
-          id: 3,
-          title: "Mens Cotton Jacket",
-          price: 55.99,
-          description:
-            "great outerwear jackets for Spring/Autumn/Winter, suitable for many occasions, such as working, hiking, camping, mountain/rock climbing, cycling, traveling or other outdoors. Good gift choice for you or your family member. A warm hearted love to Father, husband or son in this thanksgiving or Christmas Day.",
-          category: "men's clothing",
-          image: "https://fakestoreapi.com/img/71li-ujtlUL._AC_UX679_.jpg",
-          rating: { rate: 4.7, count: 500 },
-        },
-      ],
-      created_at: Date.now(),
-    },
-  ];
+      };
+
+      axios
+        .post(
+          `https://${process.env.REACT_APP_API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getOrders/${email}`,
+          header
+        )
+        .then((res) => {
+          console.log("Log in Place order Function", res.data);
+        })
+        .catch((err) =>
+          console.log("Error during placing Order: ", err.message)
+        );
+    } else {
+      navigate("/signin");
+    }
+  })
+
   return (
     <>
       <div className="flex flex-wrap max-w-7xl mx-auto my-4">

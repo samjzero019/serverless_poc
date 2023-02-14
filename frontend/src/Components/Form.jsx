@@ -112,10 +112,6 @@ export default function Form() {
 
 
 
-  const handleReset = () => {
-  
-  };
-
   return (
     <div className={classes.root}>
       <Grid

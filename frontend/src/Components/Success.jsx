@@ -90,10 +90,13 @@ export default function Success() {
       navigate("/signin");
     }
   }
+
   useEffect(()=>
   {
    return ()=> placeOrder()
   })
+
+  
   return (
     <Card className={classes.root}>
       <CardContent>
