@@ -8,30 +8,30 @@ const headers = {
   "X-Requested-With": "*",
 };
 
-const tableName = process.env.TABLE_NAME;  // Gets the Order Table from environment variable.
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
+const tableName = process.env.TABLE_NAME;
 
 module.exports.handler = async (event) => {
   console.log(" event: ", event);
-  const { username } = event.pathParameters;
+  const { ID } = event.pathParameters;
+  const { username } = event.queryStringParameters;
 
   let params = {
     TableName: tableName,
+    Key: {
+      OrderID: ID,
+      Username: username,
+    },
   };
-
+  console.log("itm in del", params);
   let response;
-  let res;
   try {
-    let allData = await docClient.scan(params).promise();
-    if (allData.Items.length > 0) {
-      res = allData.Items.filter((itm) => itm.Username === username);
-    }
-    console.log("single: ", allData)
+    await docClient.delete(params).promise();
     response = {
       statusCode: 200,
       headers: headers,
-      body: JSON.stringify(res),
+      body: "Order Deleted Successfully",
     };
   } catch (err) {
     response = {
@@ -40,6 +40,5 @@ module.exports.handler = async (event) => {
       body: JSON.stringify(err.message),
     };
   }
-
   return response;
 };

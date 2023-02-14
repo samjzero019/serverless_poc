@@ -66,11 +66,6 @@ export default function Form() {
   const steps = getSteps();
 
 
-
-
-
-
-
   const isStepOptional = (step) => {
     return step === 1;
   };

@@ -8,8 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { useCart } from "../Context/CartContext";
 import { useAuth } from "../Context/AuthContext";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import succlogo from "../Assets/animat-checkmark.gif";
+
 const useStyles = makeStyles({
   root: {
     minWidth: 400,
@@ -45,14 +48,11 @@ export default function Success() {
   const { loggedIn } = useAuth();
   const navigate = useNavigate();
 
-  
-
   const placeOrder = () => {
-    console.log("LoggedIn: ", loggedIn);
     if (loggedIn) {
       const cardDetails = JSON.parse(localStorage.getItem("cardDetails"));
       const address = localStorage.getItem("address");
-      const  {email}  = JSON.parse(localStorage.getItem("user")) ;
+      const { email } = JSON.parse(localStorage.getItem("user"));
 
       const header = {
         headers: {
@@ -78,25 +78,43 @@ export default function Success() {
           console.log("Log in Place order Function", res.data);
           if (loggedIn) {
             emptyCart();
+            toast(" Order Request has been submitted!", {
+              position: "top-right",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "light",
+            });
             navigate("/");
           } else {
             alert("Please Login First to place order!");
           }
         })
-        .catch((err) =>
-          console.log("Error during placing Order: ", err.message)
-        );
+        .catch((err) => {
+          console.log("Error during placing Order: ", err.message);
+          toast(`Error: ${err.message}`, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          });
+        });
     } else {
       navigate("/signin");
     }
-  }
+  };
 
-  useEffect(()=>
-  {
-   return ()=> placeOrder()
-  })
+  useEffect(() => {
+    return () => placeOrder();
+  });
 
-  
   return (
     <Card className={classes.root}>
       <CardContent>

@@ -1,7 +1,7 @@
 
 const validations = (currentUser, users) => {
   console.log(users)
-  const isUser = users.some((item) => item.email === currentUser.email)
+
 
   let errors = {}
 
@@ -15,9 +15,7 @@ const validations = (currentUser, users) => {
     errors.email = "Email is required."
   } else if (!/\S+@\S+\.\S+/.test(currentUser.email)) {
     errors.email = "Email is invalid."
-  } else if (isUser) {
-    errors.email = "This email address is already being used!"
-  }
+  } 
   if (!currentUser.password) {
     errors.password = "Password is required."
   } else if (currentUser.password.length < 8) {

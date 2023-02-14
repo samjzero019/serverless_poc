@@ -169,6 +169,8 @@ functions:
 
   getOrders:
     handler: functions/user/getOrders.handler
+    environment:
+      TABLE_NAME: "OrderTable"
     package:
       patterns:
         - '!functions/**'
@@ -183,6 +185,31 @@ functions:
           method: get
           cors: true
           # private: true
+          authorizer: 
+            name: cognito-authorizer-named
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - ServerlessCognitoUserPool
+                - Arn
+            claims:
+              - email 
+  deleteOrders:
+    handler: functions/user/deleteOrder.handler
+    environment:
+      TABLE_NAME: "OrderTable"
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/deleteOrder.js
+    events:
+      - http:
+          path: /api/deleteOrder/{ID}
+          method: delete
+          cors: true
           authorizer: 
             name: cognito-authorizer-named
             type: COGNITO_USER_POOLS
@@ -216,14 +243,10 @@ resources:
           UserPoolId: !Ref ServerlessCognitoUserPool
           ClientName: serverless-auth--user-pool-client-ui
           ExplicitAuthFlows:
-            # - ALLOW_ADMIN_USER_PASSWORD_AUTH
             # - ALLOW_REFRESH_TOKEN_AUTH
             - "ADMIN_NO_SRP_AUTH"  # verify user by username and password
-          # GenerateSecret: false
           # AccessTokenValidity: 5
           # IdTokenValidity: 5
-          # SupportedIdentityProviders:
-          #   - COGNITO
 
       OrderDynamoDB:
         Type: AWS::DynamoDB::Table

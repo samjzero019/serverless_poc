@@ -17,7 +17,6 @@ export const ProductProvider = ({ children }) => {
   const GET_CATEGORY_PRODUCTS_API_ENDPOINT = `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProducts/${category}`;
   const GET_PRODUCT_DETAILS_API_ENDPOINT = `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/getProductDetails/${productID}`;
 
-  const PLACE_ORDER_API_ENDPOINT = `https://${API_GATEWAY_ID}.execute-api.us-east-2.amazonaws.com/dev/api/placeOrder`
   useEffect(() => {
     setLoading(true);
     axios
@@ -51,7 +50,7 @@ export const ProductProvider = ({ children }) => {
         setProductList(res.data);
         setCategory("");
         setLoading(false);
-      }).catch(err => console.log("Error in getting all producrts", err.message)) ;
+      }).catch(err => console.log("Error in getting all products", err.message)) ;
     }
   }, [
     GET_CATEGORY_PRODUCTS_API_ENDPOINT,
