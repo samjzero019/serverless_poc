@@ -31,6 +31,8 @@ export default function Details() {
   const [address, setAddress] = useState("Dummy address");
 
   const {email} = JSON.parse(localStorage.getItem('user')) || "dummy@mail.com"
+  const [emailUser, setEmailUser] = useState(email? email: "dummy@mail.com")
+  console.log("emailUSer: ", emailUser)
   useEffect(()=>
   {
     return ()=> localStorage.setItem('address', address )
@@ -48,10 +50,11 @@ export default function Details() {
         </Typography>
         <TextField
           id="filled-basic"
-          value={ email ? email   : "username/email"}
+          value={emailUser}
           label="Username"
           variant="filled"
           className={classes.text}
+          onChange={(e)=> setEmailUser(e.target.value)}
 
         />
         <br />

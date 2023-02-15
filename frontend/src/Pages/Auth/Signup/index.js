@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../Context/AuthContext";
 import styles from "./styles.module.css";
 import validations from "./validations";
+import {toast} from "react-toastify"
 
 const Signup = () => {
   const {
@@ -40,7 +41,16 @@ const Signup = () => {
         console.log("Response in SingUp: ", res.data);
         localStorage.setItem("user", JSON.stringify(currentUser));
         localStorage.setItem("users", JSON.stringify(users));
-
+        toast("SignUp Successful. Please Login!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
         navigate("/");
       })
       .catch((err) => console.log("Error in SingUp: ", err.message));

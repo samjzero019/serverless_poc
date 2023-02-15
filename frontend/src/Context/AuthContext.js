@@ -1,7 +1,6 @@
 
 import { createContext, useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-
+import {toast} from 'react-toastify'
 const AuthContext = createContext();
 
 const defaultUser = JSON.parse(localStorage.getItem("user")) || {
@@ -49,6 +48,16 @@ const AuthProvider = ({ children }) => {
       address: "",
     });
     setLoggedIn(false);
+    toast(" User signed out!", {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
   };
 
   useEffect(() => {

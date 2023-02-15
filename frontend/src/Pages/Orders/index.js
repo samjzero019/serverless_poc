@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 import styles from "./styles.module.css";
 import { TrashIcon } from "@heroicons/react/outline";
 
-import { useAuth } from "../../Context/AuthContext";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const Orders = () => {
   const [orders, setOrders] = useState();
-  const { loggedIn } = useAuth();
 
   useEffect(() => {
     const { email } = JSON.parse(localStorage.getItem("user"));
@@ -48,6 +47,16 @@ const Orders = () => {
       .then((res) => {
         console.log("res.data", res.data);
         setOrders([])
+        toast(" Order has been Deleted!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
       })
       .catch((err) => console.log("Error during getting Order: ", err.message));
   };
@@ -56,13 +65,12 @@ const Orders = () => {
     <>
       <div className="flex flex-wrap max-w-7xl mx-auto my-4">
         <div className="flex flex-col flex-1">
-          {orders &&
-            orders.map((ord) => {
+          {orders && orders.map((ord) => {
               return (
                 <div
                   className="w-full sm:w-2/2 md:w-2/2 xl:w-5/5 p-4 my-auto" 
                   key={ord.OrderID}
-                >
+                  >
                   <div className={styles.bgCart}>
                     <div className="flex flex-row ">
                       <div

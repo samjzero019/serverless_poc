@@ -244,7 +244,7 @@ resources:
           ClientName: serverless-auth--user-pool-client-ui
           ExplicitAuthFlows:
             # - ALLOW_REFRESH_TOKEN_AUTH
-            - "ADMIN_NO_SRP_AUTH"  # verify user by username and password
+            - "ADMIN_NO_SRP_AUTH"  
           # AccessTokenValidity: 5
           # IdTokenValidity: 5
 
