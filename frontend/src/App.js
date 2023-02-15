@@ -10,6 +10,12 @@ import Container from './Components/Container'
 import ProductDetail from './Pages/ProductDetail'
 import Cart from './Pages/Cart'
 import Favorites from './Pages/Favorites'
+import PaymentForm from "./Components/Form";
+import Orders from './Pages/Orders'
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function App() {
   return (
@@ -24,9 +30,25 @@ function App() {
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/signin" element={<Signin />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/payment" element={<PaymentForm />} />
+          <Route path="/orders" element={<Orders />} />
           <Route path="*" element={<Error404 />} />
         </Routes>
       </Container>
+      <ToastContainer
+              position="top-right"
+              autoClose={5000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="light"
+              />
+        {/* Same as */}
+        <ToastContainer />
     </div>
   )
 }

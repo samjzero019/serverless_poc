@@ -25,11 +25,17 @@ const CartProvider = ({children}) => {
     setItems(filtered)
   }
 
+  const emptyCart = () => {
+    localStorage.setItem('cart', [])
+    setItems([])
+  }
+
   const values = {
     items,
     setItems,
     addToCart,
     removeFromCart,
+    emptyCart
   }
 
   return <CartContext.Provider value={values}>{children}</CartContext.Provider>

@@ -7,6 +7,8 @@ provider:
   name: aws
   runtime: nodejs14.x
   region: us-east-2
+  timeout: 30 # since lambdas are attached to gateway thus it is limited to max 30s 
+
   # permissions for lambda to call other resources
   iamRoleStatements:
     - Effect: Allow
@@ -15,8 +17,16 @@ provider:
         - cognito-idp:AdminCreateUser
         - cognito-idp:AdminSetUserPassword
       Resource: "*"
-  
-# custom:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "*"
+
   
 
 functions:
@@ -132,6 +142,8 @@ functions:
   # func for order 
   PlaceOrder:
     handler: functions/user/placeOrder.handler
+    environment:
+      TABLE_NAME: "OrderTable"
     package:
       patterns:
         - '!functions/**'
@@ -143,9 +155,8 @@ functions:
     events:
       - http:
           path: /api/placeOrder
-          method: get
+          method: post
           cors: true
-          private: true
           authorizer: 
             name: cognito-authorizer-named
             type: COGNITO_USER_POOLS
@@ -155,6 +166,59 @@ functions:
                 - Arn
             claims:
               - email
+
+  getOrders:
+    handler: functions/user/getOrders.handler
+    environment:
+      TABLE_NAME: "OrderTable"
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/getOrders.js
+        - functions/user/include.js
+    events:
+      - http:
+          path: /api/getOrders/{username}
+          method: get
+          cors: true
+          # private: true
+          authorizer: 
+            name: cognito-authorizer-named
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - ServerlessCognitoUserPool
+                - Arn
+            claims:
+              - email 
+  deleteOrders:
+    handler: functions/user/deleteOrder.handler
+    environment:
+      TABLE_NAME: "OrderTable"
+    package:
+      patterns:
+        - '!functions/**'
+        - '!package.json'
+        - '!package-lock.json'
+        - '!README.md'
+        - functions/user/deleteOrder.js
+    events:
+      - http:
+          path: /api/deleteOrder/{ID}
+          method: delete
+          cors: true
+          authorizer: 
+            name: cognito-authorizer-named
+            type: COGNITO_USER_POOLS
+            arn:
+              Fn::GetAtt:
+                - ServerlessCognitoUserPool
+                - Arn
+            claims:
+              - email 
 
 resources:
   Resources:
@@ -179,17 +243,33 @@ resources:
           UserPoolId: !Ref ServerlessCognitoUserPool
           ClientName: serverless-auth--user-pool-client-ui
           ExplicitAuthFlows:
-            - ALLOW_ADMIN_USER_PASSWORD_AUTH
-            - ALLOW_REFRESH_TOKEN_AUTH
-            # - ADMIN_NO_SRP_AUTH  # verify user by username and password
-          GenerateSecret: false
-          SupportedIdentityProviders:
-            - COGNITO
+            # - ALLOW_REFRESH_TOKEN_AUTH
+            - "ADMIN_NO_SRP_AUTH"  
+          # AccessTokenValidity: 5
+          # IdTokenValidity: 5
 
-     
+      OrderDynamoDB:
+        Type: AWS::DynamoDB::Table
+        Properties:
+          TableName: OrderTable
+          AttributeDefinitions:
+            - AttributeName: OrderID
+              AttributeType: S
+            - AttributeName: Username
+              AttributeType: S
+
+
+          KeySchema:
+            - AttributeName: OrderID
+              KeyType: HASH
+            - AttributeName: Username
+              KeyType: RANGE
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
 outputs:
   CognitoClientID: !Ref ServerlessCognitoPoolUserClient
   CognitoUserPoolID: !Ref ServerlessCognitoUserPool
-  
+  OrderDynamoDBTableName: !Ref  OrderDynamoDB
   
